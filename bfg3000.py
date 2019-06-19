@@ -13,6 +13,8 @@ class BrainFuck(object):
             [0, 0, 0, 32, 0, 64, 0, 96, 0, 128],
         ),
     }
+    MAX_OP = 8
+    LOOPS = 4
 
     def __init__(self, mem_type):
         self.init, mem = self.INIT_MEM[mem_type]
@@ -34,8 +36,21 @@ class BrainFuck(object):
                 min_i, min_d = i, d
         return (min_i, min_d)
 
+    def lookup_zero(self):
+        zero_p = self.cur_p
+        while zero_p and self.mem[zero_p]:
+            zero_p -= 1
+        return zero_p
+
     def compile(self, c):
         segment, offset = c
+        # NOTE: move the pointer to the correct segment
+        if segment >= self.cur_p:
+            code = ('>' * (segment - self.cur_p))
+        else:
+            code = ('<' * (self.cur_p - segment))
+        self.cur_p = segment
+        # NOTE: modify the segment to the required char
         self.mem[segment] += offset
         ascii = chr(self.mem[segment])
         if offset >= 0:
@@ -43,12 +58,21 @@ class BrainFuck(object):
         else:
             op = '-'
             offset = -offset
-        code = (op * offset) + '.'
-        if segment >= self.cur_p:
-            code = ('>' * (segment - self.cur_p)) + code
+        if offset > self.MAX_OP:
+            loop = offset / self.LOOPS
+            remain = offset % self.LOOPS
+            zero_d = self.cur_p - self.lookup_zero()
+            zero_l = '<' * zero_d
+            zero_r = '>' * zero_d
+            code += zero_l
+            code += '+' * self.LOOPS
+            code += '[' + zero_r + op * loop + zero_l + '-]'
+            code += zero_r
+            code += op * remain
         else:
-            code = ('<' * (self.cur_p - segment)) + code
-        self.cur_p = segment
+            code += (op * offset)
+        # NOTE: print the char
+        code += '.'
         return ascii, code
 
 
