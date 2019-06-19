@@ -39,10 +39,11 @@ class BrainFuck(object):
         self.mem[segment] += offset
         ascii = chr(self.mem[segment])
         if offset >= 0:
-            code = ('+' * offset) + '.'
+            op = '+'
         else:
+            op = '-'
             offset = -offset
-            code = ('-' * offset) + '.'
+        code = (op * offset) + '.'
         if segment >= self.cur_p:
             code = ('>' * (segment - self.cur_p)) + code
         else:
