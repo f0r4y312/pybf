@@ -36,12 +36,13 @@ class BrainFuck(object):
 
     def compile(self, c):
         segment, offset = c
-        ascii = chr(self.mem[segment] + offset)
+        self.mem[segment] += offset
+        ascii = chr(self.mem[segment])
         if offset >= 0:
-            code = ('+' * offset) + '.' + ('-' * offset)
+            code = ('+' * offset) + '.'
         else:
             offset = -offset
-            code = ('-' * offset) + '.' + ('+' * offset)
+            code = ('-' * offset) + '.'
         if segment >= self.cur_p:
             code = ('>' * (segment - self.cur_p)) + code
         else:
