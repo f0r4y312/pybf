@@ -31,7 +31,7 @@ class BrainFuck(object):
             c = self.lookup_symbol(c)
             _, code = self.compile(c)
             generated_code.append(code)
-        generated_code.append(self.move_ptr(0))
+        generated_code.extend(self.exit())
         return generated_code
 
     def lookup_symbol(self, c):
@@ -83,6 +83,15 @@ class BrainFuck(object):
         # NOTE: print the char
         code += '.'
         return ascii, code
+
+    def exit(self):
+        exit_code = [self.move_ptr(0)]
+        addrs = self.init.count('>')
+        reset_code = '>[-]' * addrs
+        exit_code.append(reset_code)
+        self.cur_p += addrs
+        exit_code.append(self.move_ptr(0))
+        return exit_code
 
 
 if __name__ == '__main__':
