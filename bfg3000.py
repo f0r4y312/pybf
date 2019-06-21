@@ -31,6 +31,7 @@ class BrainFuck(object):
             c = self.lookup_symbol(c)
             _, code = self.compile(c)
             generated_code.append(code)
+        generated_code.append(self.move_ptr(0))
         return generated_code
 
     def lookup_symbol(self, c):
@@ -46,14 +47,18 @@ class BrainFuck(object):
             zero_p -= 1
         return zero_p
 
+    def move_ptr(self, target):
+        if target >= self.cur_p:
+            code = ('>' * (target - self.cur_p))
+        else:
+            code = ('<' * (self.cur_p - target))
+        self.cur_p = target
+        return code
+
     def compile(self, c):
         segment, offset = c
         # NOTE: move the pointer to the correct segment
-        if segment >= self.cur_p:
-            code = ('>' * (segment - self.cur_p))
-        else:
-            code = ('<' * (self.cur_p - segment))
-        self.cur_p = segment
+        code = self.move_ptr(segment)
         # NOTE: modify the segment to the required char
         self.mem[segment] += offset
         ascii = chr(self.mem[segment])
