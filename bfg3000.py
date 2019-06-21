@@ -1,3 +1,6 @@
+import textwrap
+
+
 class BrainFuck(object):
     INIT_MEM = {
         '16Z': (
@@ -93,10 +96,28 @@ class BrainFuck(object):
         exit_code.append(self.move_ptr(0))
         return exit_code
 
+    @classmethod
+    def format(cls, code, width=64):
+        formatted_code = textwrap.wrap(code, width=width)
+        if not formatted_code:
+            return code
+        last_line = formatted_code[-1]
+        last_line_padding = '=' * (width - len(last_line))
+        formatted_code[-1] = last_line + last_line_padding
+        return '\n'.join(formatted_code)
+
 
 if __name__ == '__main__':
     sample_sz = 'Hello, World!'
+    least_code_len = float('inf')
+    smallest_obj = ''
     for mem_type in sorted(BrainFuck.INIT_MEM.keys()):
         bf_compiler = BrainFuck(mem_type)
         bf_code = bf_compiler.build(sample_sz)
-        print mem_type, ''.join(bf_code)
+        bf_obj = ''.join(bf_code)
+        code_len = len(bf_obj)
+        if least_code_len > min(code_len, least_code_len):
+            least_code_len = code_len
+            smallest_obj = bf_obj
+        print mem_type, code_len, bf_obj
+    print BrainFuck.format(smallest_obj)
