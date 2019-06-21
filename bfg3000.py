@@ -95,7 +95,7 @@ class BrainFuck(object):
 
 
 if __name__ == '__main__':
-    sample_sz = 'Hello World!'
+    sample_sz = 'Hello, World!'
     for mem_type in sorted(BrainFuck.INIT_MEM.keys()):
         bf_compiler = BrainFuck(mem_type)
         bf_code = bf_compiler.build(sample_sz)
